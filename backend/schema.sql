@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS bills (
+    id                SERIAL PRIMARY KEY,
+    file_path         TEXT NOT NULL,
+    file_type         VARCHAR(10)  NOT NULL,
+    llm_engine        VARCHAR(20)  NOT NULL,
+    status            VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
+    vendor_name       TEXT,
+    vendor_address    TEXT,
+    invoice_number    TEXT,
+    invoice_date      DATE,
+    due_date          DATE,
+    currency          VARCHAR(10),
+    line_items        JSONB,
+    subtotal          NUMERIC(12,2),
+    tax_amount        NUMERIC(12,2),
+    discount          NUMERIC(12,2),
+    total_amount      NUMERIC(12,2),
+    payment_method    TEXT,
+    notes             TEXT,
+    error_message     TEXT,
+    created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
