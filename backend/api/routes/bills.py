@@ -15,9 +15,11 @@ from api.schemas import BillResponse, BillUpdate, UploadResponse
 router = APIRouter()
 
 @router.post("/upload", response_model=UploadResponse, status_code=201)
-async def upload_bill(file: UploadFile = File(...), llm_engine: str = Form(...), db: AsyncSession = Depends(get_db)):
+async def upload_bill(file: UploadFile = File(...), llm_engine: str = Form(...), doc_type: str = Form("bol"), db: AsyncSession = Depends(get_db)):
     if llm_engine not in ("ollama", "gemini"):
         raise HTTPException(status_code=400, detail="llm_engine must be 'ollama' or 'gemini'.")
+    if doc_type not in ("invoice", "bol"):
+        raise HTTPException(status_code=400, detail="doc_type must be 'invoice' or 'bol'.")
 
     file_type = "pdf" if file.content_type == "application/pdf" or file.filename.lower().endswith(".pdf") else "image"
     uploads_dir = Path(os.getenv("UPLOADS_DIR", "./uploads")).resolve()
@@ -34,7 +36,7 @@ async def upload_bill(file: UploadFile = File(...), llm_engine: str = Form(...),
     await db.refresh(bill)
 
     try:
-        publish_bill_message(bill.id, file_path, file_type, llm_engine)
+        publish_bill_message(bill.id, file_path, file_type, llm_engine, doc_type)
     except Exception as exc:
         pass
 

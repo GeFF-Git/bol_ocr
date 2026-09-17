@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from api.routes.bills import router as bills_router
+from api.routes.bols import router as bols_router
 
 app = FastAPI(title="Bill Processor POC")
 
@@ -46,6 +47,7 @@ app.add_middleware(
 )
 
 app.include_router(bills_router, prefix="/api/bills", tags=["bills"])
+app.include_router(bols_router, prefix="/api/bols", tags=["bols"])
 
 @app.get("/")
 def root():

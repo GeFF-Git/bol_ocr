@@ -1,4 +1,4 @@
-﻿import json, os, PIL.Image
+import json, os, PIL.Image
 from json_repair import repair_json
 from extractors.base import BaseExtractor
 from prompts.extraction_prompt import EXTRACTION_PROMPT
@@ -11,11 +11,12 @@ class GeminiExtractor(BaseExtractor):
         genai.configure(api_key=key)
         self.model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
 
-    def extract(self, image_path: str) -> dict:
+    def extract(self, image_path: str, prompt: str = None) -> dict:
         import google.generativeai as genai
         img = PIL.Image.open(image_path)
+        used_prompt = prompt or EXTRACTION_PROMPT
         res = self.model.generate_content(
-            [EXTRACTION_PROMPT, img],
+            [used_prompt, img],
             generation_config=genai.GenerationConfig(response_mime_type="application/json")
         )
         raw = res.text.strip()
